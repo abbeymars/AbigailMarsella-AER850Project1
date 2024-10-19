@@ -15,6 +15,7 @@ import joblib as jb
 df = pd.read_csv("Project_1_Data.csv")
 print(df.info())
 
+
 #Step 2 - Visualize Data
 #arrays
 x = df['X'].values
@@ -31,6 +32,7 @@ plt.ylabel('Points')
 plt.title('X, Y, Z Data Points vs Step')
 plt.legend()
 plt.show()
+
 
 #Step 3 - Correlation Analysis
 #Using Pearson Correlation
