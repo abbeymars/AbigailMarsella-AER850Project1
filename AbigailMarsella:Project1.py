@@ -16,18 +16,26 @@ df = pd.read_csv("Project_1_Data.csv")
 print(df.info())
 
 #Step 2 - Visualize Data
+#arrays
 x = df['X'].values
 y = df['Y'].values
 z = df['Z'].values
 Step = df['Step'].values
-
-plt.plot(Step, x, label= 'X')
-plt.plot(Step, y, label= 'Y')
-plt.plot(Step, z, label= 'Z')
-
-
+#plots 
+plt.plot(df['Step'], df['X'], label='X Data')
+plt.plot(df['Step'], df['Y'], label='Y Data')
+plt.plot(df['Step'], df['Z'], label='Z Data')
+#lables and legends
 plt.xlabel('Step')
-plt.ylabel('Values')
-plt.title('Line Plot')
+plt.ylabel('Points')
+plt.title('X, Y, Z Data Points vs Step')
 plt.legend()
 plt.show()
+
+#Step 3 - Correlation Analysis
+#Using Pearson Correlation
+corr_matrix = df.corr()
+sns.heatmap(np.abs(corr_matrix))
+
+
+
