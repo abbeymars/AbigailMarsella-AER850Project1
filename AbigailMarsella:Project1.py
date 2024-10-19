@@ -17,6 +17,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score
 
+from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix
+
 import joblib as jb
 
 #Step 1 - Read Data File
@@ -50,15 +53,15 @@ sns.heatmap(np.abs(corr_matrix))
 
 #Step 4 - Classification Model Development and Engineering
 #split
-X = ['X','Y','Z'] #feature matrix
-Y = ['Step'] #target variable
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,random_state = 42)
+X = df[['X', 'Y', 'Z']] 
+Y = df['Step']
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2,random_state = 42)
 
 #Logistic Regression Model
-logistic_regression = LogisticRegression(max_iter=1000)
+logistic_regression = LogisticRegression(max_iter=10000)
 parametric_grid_lr = { 'C': [0.01, 0.1, 1, 10, 100]
     }
-grid_search_lr = GridSearchCV(logistic_regression, param_grid=parametric_grid_lr, cv=5)
+grid_search_lr = GridSearchCV(logistic_regression, parametric_grid_lr, cv=5)
 grid_search_lr.fit(X_train, y_train)
 best_model_lr = grid_search_lr.best_estimator_
 Y_pred_lr = grid_search_lr.predict(X_test)
@@ -72,7 +75,7 @@ parametric_grid_rf = {'n_estimators': [10, 30, 50, 100],
 'max_depth': [None, 10, 20, 30],
 'min_samples_split': [2, 5, 10],
     }
-grid_search_rf = RandomizedSearchCV(random_forest, param_grid=parametric_grid_rf, cv=5, scoring='accuracy', n_jobs=1)
+grid_search_rf = RandomizedSearchCV(random_forest, parametric_grid_rf, cv=5, scoring='accuracy', n_jobs=1)
 grid_search_rf.fit(X_train, y_train)
 best_model_rf = grid_search_rf.best_estimator_
 Y_pred_rf = grid_search_rf.predict(X_test)
@@ -86,15 +89,27 @@ parametric_grid_svm = {'kernel': ['linear', 'rbf'],
   'C': [0.1, 1, 10, 100],
   'gamma': ['scale', 'auto']
     }
-grid_search_svm = GridSearchCV(svm, param_grid=parametric_grid_svm, cv=5, scoring='accuracy', n_jobs=-1)
+grid_search_svm = GridSearchCV(svm, parametric_grid_svm, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_svm.fit(X_train, y_train)
 best_model_svm = grid_search_svm.best_estimator_
 Y_pred_svm = grid_search_svm.predict(X_test)
 accuracy_svm = accuracy_score(y_test, Y_pred_svm)
 print("Best Support Vector Machine Model:", best_model_svm)
-print(f"Support Vector Machine Accuracy: {accuracy_rf}")
+print(f"Support Vector Machine Accuracy: {accuracy_svm}")
 
 
 #Step 5 - Model Performance Analysis
+#Compare the overall performance of each model based on f1 score, precision and accuracy.
+#Based on the selected model, create a confusion matrix to visualize the performance of your model
+
+
+
+
+
+
+
+
+
+
 
 
