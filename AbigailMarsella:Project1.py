@@ -9,9 +9,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVR
+from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
@@ -54,23 +54,25 @@ X = ['X','Y','Z'] #feature matrix
 Y = ['Step'] #target variable
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,random_state = 42)
 
-#Linear Regression Model
-linear_regression = LinearRegression()
-parametric_grid_lr = {
+#Logistic Regression Model
+logistic_regression = LogisticRegression(max_iter=1000)
+parametric_grid_lr = { 'C': [0.01, 0.1, 1, 10, 100]
     }
-grid_search_lr = GridSearchCV(linear_regression, parametric_grid_lr, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search_lr = GridSearchCV(logistic_regression, param_grid=parametric_grid_lr, cv=5)
 grid_search_lr.fit(X_train, y_train)
 best_model_lr = grid_search_lr.best_estimator_
 Y_pred_lr = grid_search_lr.predict(X_test)
 accuracy_lr = accuracy_score(y_test, Y_pred_lr)
-print("Best Linear Regression Model:", best_model_lr)
-print(f"Linear Regression Test Accuracy: {accuracy_lr}")
+print("Best Logistic Regression Model:", best_model_lr)
+print(f"Logistic Regression Test Accuracy: {accuracy_lr}")
 
 #Random Forest Classifier (with RandomizedSearchCV)
 random_forest = RandomForestClassifier()
-parametric_grid_rf = {
+parametric_grid_rf = {'n_estimators': [10, 30, 50, 100],
+'max_depth': [None, 10, 20, 30],
+'min_samples_split': [2, 5, 10],
     }
-grid_search_rf = RandomizedSearchCV(random_forest, param_distributions=parametric_grid_rf, cv=5, scoring='neg_mean_absolute_error', n_jobs=1)
+grid_search_rf = RandomizedSearchCV(random_forest, param_grid=parametric_grid_rf, cv=5, scoring='accuracy', n_jobs=1)
 grid_search_rf.fit(X_train, y_train)
 best_model_rf = grid_search_rf.best_estimator_
 Y_pred_rf = grid_search_rf.predict(X_test)
@@ -79,10 +81,12 @@ print("Best Random Forest Model:", best_model_rf)
 print(f"Random Forest Test Accuracy: {accuracy_rf}")
 
 #Support Vector Machine
-svm = SVR()
-parametric_grid_svm = {
+svm = SVC()
+parametric_grid_svm = {'kernel': ['linear', 'rbf'],
+  'C': [0.1, 1, 10, 100],
+  'gamma': ['scale', 'auto']
     }
-grid_search_svm = GridSearchCV(svm, parametric_grid_svm, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search_svm = GridSearchCV(svm, param_grid=parametric_grid_svm, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_svm.fit(X_train, y_train)
 best_model_svm = grid_search_svm.best_estimator_
 Y_pred_svm = grid_search_svm.predict(X_test)
@@ -90,5 +94,7 @@ accuracy_svm = accuracy_score(y_test, Y_pred_svm)
 print("Best Support Vector Machine Model:", best_model_svm)
 print(f"Support Vector Machine Accuracy: {accuracy_rf}")
 
+
+#Step 5 - Model Performance Analysis
 
 
