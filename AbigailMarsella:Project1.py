@@ -20,8 +20,7 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.ensemble import StackingClassifier
-
-import joblib as jb
+import joblib
 
 #Step 1 - Read Data File
 df = pd.read_csv("Project_1_Data.csv")
@@ -176,13 +175,14 @@ plot_confusion_matrix(confusion_matrix_stacking, 'Stacked Model Confusion Matrix
 
 
 #Step 7 - Model Evaluation
-
-
-
-
-
-
-
-
-
+savedmodel_jl = "stacked_model.joblib"
+joblib.dump(stacking_model, savedmodel_jl)
+# Load the saved model
+loaded_model = joblib.load(savedmodel_jl)
+#New maintenance step
+newdata = [[9.375,3.0625,1.51], [6.995,5.125,0.3875], [0,3.0625,1.93], [9.4,3,1.8], [9.4,3,1.3]]
+# Predict the corresponding maintenance steps for new data
+predicted_steps = loaded_model.predict(newdata)
+# Print the predictions
+print(f"Predicted Maintenance Steps: {predicted_steps}")
 
