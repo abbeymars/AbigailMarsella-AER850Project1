@@ -19,6 +19,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
+from sklearn.ensemble import StackingClassifier
 
 import joblib as jb
 
@@ -64,10 +65,10 @@ parametric_grid_lr = { 'C': [0.01, 0.1, 1, 10, 100]
 grid_search_lr = GridSearchCV(logistic_regression, parametric_grid_lr, cv=5)
 grid_search_lr.fit(X_train, y_train)
 best_model_lr = grid_search_lr.best_estimator_
+print("Best Logistic Regression Model:", best_model_lr)
 Y_pred_lr = grid_search_lr.predict(X_test)
 accuracy_lr = accuracy_score(y_test, Y_pred_lr)
 precision_lr = precision_score(y_test, Y_pred_lr, average='weighted')
-print("Best Logistic Regression Model:", best_model_lr)
 
 #Random Forest Classifier (with RandomizedSearchCV)
 random_forest = RandomForestClassifier()
@@ -78,10 +79,10 @@ parametric_grid_rf = {'n_estimators': [10, 30, 50, 100],
 grid_search_rf = RandomizedSearchCV(random_forest, parametric_grid_rf, cv=5, scoring='accuracy', n_jobs=1)
 grid_search_rf.fit(X_train, y_train)
 best_model_rf = grid_search_rf.best_estimator_
+print("Best Random Forest Model:", best_model_rf)
 Y_pred_rf = grid_search_rf.predict(X_test)
 accuracy_rf = accuracy_score(y_test, Y_pred_rf)
 precision_rf = precision_score(y_test, Y_pred_rf, average='weighted')
-print("Best Random Forest Model:", best_model_rf)
 
 #Support Vector Machine
 svm = SVC()
@@ -92,10 +93,10 @@ parametric_grid_svm = {'kernel': ['linear', 'rbf'],
 grid_search_svm = GridSearchCV(svm, parametric_grid_svm, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_svm.fit(X_train, y_train)
 best_model_svm = grid_search_svm.best_estimator_
+print("Best Support Vector Machine Model:", best_model_svm)
 Y_pred_svm = grid_search_svm.predict(X_test)
 accuracy_svm = accuracy_score(y_test, Y_pred_svm)
 precision_svm = precision_score(y_test, Y_pred_svm, average='weighted')
-print("Best Support Vector Machine Model:", best_model_svm)
 
 
 #Step 5 - Model Performance Analysis
@@ -133,6 +134,48 @@ plot_confusion_matrix(confusion_matrix_rf, 'Random Forest Confusion Matrix')
 plot_confusion_matrix(confusion_matrix_svm, 'Support Vector Machine Confusion Matrix')
 
 
+#Step 6 - Stacked Model Performance Analysis
+#Define models
+lr_model = LogisticRegression(C=100, max_iter=10000)
+rf_model = RandomForestClassifier(max_depth=30, min_samples_split=10, n_estimators=50)
+#Train models
+lr_model.fit(X_train, y_train)
+rf_model.fit(X_train, y_train)
+#Stacking models
+finalestimator = LogisticRegression()
+stacking_model = StackingClassifier(
+    estimators=[
+        ('lr', lr_model),
+        ('rf', rf_model)
+    ],
+    final_estimator = finalestimator)  
+
+stacking_model.fit(X_train, y_train)
+Y_pred_stacking = stacking_model.predict(X_test)
+accuracy_stacking = accuracy_score(y_test, Y_pred_stacking)
+precision_stacking = precision_score(y_test, Y_pred_stacking, average='weighted')
+f1_stacking = f1_score(y_test, Y_pred_stacking, average='weighted')
+
+print(f"Stacked Model F1 Score: {f1_stacking}")
+print(f"Stacked Model Accuracy: {accuracy_stacking}")
+print(f"Stacked Model Precision: {precision_stacking}")
+
+#Confusion Matrix
+confusion_matrix_stacking = confusion_matrix(y_test, Y_pred_stacking)
+
+
+def plot_confusion_matrix_stacking(matrix, title):
+    plt.figure(figsize=(6,4))
+    sns.heatmap(matrix, annot=True, fmt="d", cmap='Blues', cbar=False)
+    plt.title(title)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.show()
+
+plot_confusion_matrix(confusion_matrix_stacking, 'Stacked Model Confusion Matrix')
+
+
+#Step 7 - Model Evaluation
 
 
 
