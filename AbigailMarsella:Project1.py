@@ -57,7 +57,7 @@ X = df[['X', 'Y', 'Z']]
 Y = df['Step']
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2,random_state = 42)
 
-#Logistic Regression Model
+#Logistic Regression
 logistic_regression = LogisticRegression(max_iter=10000)
 parametric_grid_lr = { 'C': [0.01, 0.1, 1, 10, 100]
     }
